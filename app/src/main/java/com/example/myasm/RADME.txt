@@ -1,0 +1,116 @@
+每一个build.gradle文件都对应一个Project对象
+根项目就是root project
+其它模块就是 sub project
+
+生命周期
+初始阶段：
+    在初始阶段，会查找settings.gradle文件并根据其中的配置决定让哪些项目参与构建，并为每一个项目创建一个Project对象
+    具体按照时间顺序有
+        执行init.gradle
+        查找settings.gradle
+        编译buildSrc目录
+        解析gradle.properties内容
+        编译并执行settings.gradle
+        创建project和subproject
+配置阶段：
+    会配置Project对象，就是执行各个模块下的build.gradle脚本，构造任务的依赖关系，生成了有向无环图，并【执行任务中的配置代码】
+执行阶段：
+    按照顺序执行任务中定义的动作
+
+针对不同的阶段，有不同的生命周期回调。用一张图把Gradle生命周期的不同阶段对应的回调方法串联起来：
+初始阶段
+    Gradle.buildStarted
+        执行settings.gradle
+    Gradle.settingsEvaluated    (settings.gradle脚本执行完毕)
+    Gradle.projectsLoaded       (项目初始化完毕)
+配置阶段
+    Gradle.beforeProject/Project.beforeEvaluate
+        执行build.gradle
+    Gradle.afterProject/Project.afterEvaluate
+    Gradle.projectsEvaluated     (所有项目的build.gradle执行完毕)
+    Gradle.taskGraph.whenReady   (Task依赖关系图建立完毕)
+执行阶段
+    Gradle.taskGraph.beforeTask
+        执行任务
+    Gradle.taskGraph.afterTask
+    Gradle.buildFinished
+
+在build.gradle文件中调用的方法相当于调用Project类中的方法
+
+获取属性的几种常见方法：
+1 Project 的 ext{} 语句
+2 插件扩展的extension
+3 定义在gradle.properties中
+
+Gradle提供了3种创建插件的方式
+1 直接在构建脚本（build.gradle）中定义插件，称为脚本插件
+2 创建一个buildSrc模块（module），并在其中定义插件，称为buildSrc插件
+3 在单独项目中定义插件，称为单独项目插件
+demo
+    1:MyScriptPlugin
+    2:MyBuildSrcPlugin
+    3:myPlugin
+
+扩展：MyExtensionTestPlugin
+扩展嵌套：其实就是调用内部的方法
+
+NamedDomainObjectContainer 命名领域对象容器，通过DSL创建指定类型的对象实例，例如 debug、release 两个
+
+调试插件
+1 创建Remote debug
+2 执行命令
+./gradlew <任务名> -Dorg.gradle.daemon=false -Dorg.gradle.debug=true
+
+
+Transform
+
+APK组成：
+classes.dex 代码编译后最终生成的文件
+res 资源文件，图片、布局等
+resources.arsc  资源文件对应的索引，通过此文件可以定位资源
+META_INF  保存应用的签名和校验信息，用于保证程序的完整性。当生成apk的时候，会对目录中所有的内容做一次校验，
+            并将结果保存在这个目录中。手机在安装apk的时候，会再做一次校验并将结果与保存的做比较，避免apk被篡改
+assets  原生资源文件，
+AndroidManifest.xml 清单配置文件
+
+应用构建流程：
+1 使用aapt 打包资源文件，生成R.java文件
+2 使用aidl 处理.aidl文件，生成对应的.java文件
+3 使用javac 编译.java文件，生成.class文件
+4 使用dx 处理.class文件，生成classes.dex文件
+5 使用apkbuilder 将所有资源和.dex文件打包成apk
+6 签名
+7 使用zipalign 对apk进行对齐处理，减少运行时内存占用
+
+Transform：(demo->MyTransform)
+    Transform就像.class文件的过滤器，内部有一个TransformManager对这些Transform进行统一管理。
+    在整个编译的过程中，.class文件会流入一个Transform，当前Transform加工处理完之后再输出，这个输入作为
+    下一个Transform的输入，直到所有的Transform都处理完成。
+API：
+getName()   定义名字
+    每一个Transform都会被转换成Gradle Task，对应TransformTask这个类，执行的时候，
+    会执行任务  > Task :app:transformClassesWithChapter2_01ForDebug ，就是这个名字。
+    它也是Transform的输出目录的文件夹名。
+getInputTypes()    指定Transform要处理的输入内容的类型
+    通常设置成CLASSES
+getScopes()    指定Transform处理的范围
+getSecondaryFiles()    将额外的文件作为输入内容添加到Transform中
+transform(TransformInvocation transformInvocation）  核心逻辑
+
+TransformInvocation
+
+
+如果不重写transform方法会不会有问题？
+Transform是串行运行的，每一个Transform会接收上一个Transform的输出资源作为它的输入资源，如果不重写transform方法，
+就不能将上一个的输出传递到下一个Transform，所以打包的时候就没有代码。
+
+为什么输出的JAR包都是以数字命名的？
+遍历文件，命名的时候，是用一个数值累加来命名的，真实的名字，可以查看生成的 _content_.json 文件
+
+
+
+
+
+
+
+

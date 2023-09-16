@@ -1,0 +1,60 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "cn.erkuai.plugin",
+    "module": "myPlugin",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "myPlugin-1.0.0.jar",
+          "url": "myPlugin-1.0.0.jar",
+          "size": 1677,
+          "sha512": "2635841ff85792d07f57efe4a8143c87d7df0193fb2290b9acffef993be17e1b8617f975f1f5ca90758a0ffdf8d79dc809fafc0bf77cc74b76088216c9fffdd0",
+          "sha256": "32f4aa4473ad41c40250cc0a08d6837c6c3f76baa51558f80f4f713cd892db88",
+          "sha1": "81750716e3e52f91e366d15f638f2db3d10accc2",
+          "md5": "8bac1ac7765c2a7d1ed34067433ddcb4"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "myPlugin-1.0.0.jar",
+          "url": "myPlugin-1.0.0.jar",
+          "size": 1677,
+          "sha512": "2635841ff85792d07f57efe4a8143c87d7df0193fb2290b9acffef993be17e1b8617f975f1f5ca90758a0ffdf8d79dc809fafc0bf77cc74b76088216c9fffdd0",
+          "sha256": "32f4aa4473ad41c40250cc0a08d6837c6c3f76baa51558f80f4f713cd892db88",
+          "sha1": "81750716e3e52f91e366d15f638f2db3d10accc2",
+          "md5": "8bac1ac7765c2a7d1ed34067433ddcb4"
+        }
+      ]
+    }
+  ]
+}

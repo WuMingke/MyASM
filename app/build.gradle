@@ -1,0 +1,122 @@
+import com.example.buildsrc.MyBuildSrcPlugin
+import com.example.buildsrc.TestTransformPlugin
+
+//import com.example.myplugin.MyStandalonePlugin
+
+plugins {
+    id 'com.android.application'
+}
+
+apply plugin: MyScriptPlugin
+apply plugin: MyBuildSrcPlugin // 不需要配置 META-INF
+//apply plugin: MyStandalonePlugin
+// 扩展
+apply plugin: MyExtensionTestPlugin
+apply plugin: TestTransformPlugin
+
+serverNode {
+    message = "msg"
+    defaultConfig {
+        address = "guangzhou"
+        cpuCount = 16
+    }
+}
+
+android {
+    namespace 'com.example.myasm'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.example.myasm"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
+
+class MyScriptPlugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project project) {
+        println("my first plugin")
+        project.task("getBuildDir") {
+            println "get build dir at configure phase"
+            doLast {
+                println "build dir : ${project.buildDir}"
+            }
+        }
+    }
+}
+
+class ServerNode {
+    String address
+    int cpuCount
+
+    @Override
+    String toString() {
+        return "ServerNode{" + "address=" + address + ",cpuCount=" + cpuCount + "}"
+    }
+}
+
+// 扩展嵌套
+class ServerExtension {
+    String message
+
+
+    ServerNode node = new ServerNode()
+
+    void defaultConfig(Action<ServerNode> action) {
+        action.execute(node)
+    }
+
+    @Override
+    String toString() {
+        return "ServerExtension { message = " + message + " , node = " + node
+    }
+}
+
+class MyExtensionTestPlugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project project) {
+        println("my extension test plugin")
+//        ServerNode node = project.getExtensions().create("serverNode", ServerNode)
+
+//                扩展嵌套
+        ServerExtension ext = project.getExtensions().create("serverNode", ServerExtension)
+
+        project.task("getResult") {
+            doLast {
+                println("result is:" + ext)
+            }
+        }
+
+
+
+    }
+}
+
