@@ -107,6 +107,17 @@ Transform是串行运行的，每一个Transform会接收上一个Transform的�
 为什么输出的JAR包都是以数字命名的？
 遍历文件，命名的时候，是用一个数值累加来命名的，真实的名字，可以查看生成的 _content_.json 文件
 
+模版：TransformTemplate
+
+并发编译：parallelStream api
+
+Transform原理：
+
+
+AGP 7.0 Transform标记废弃
+AGP 8.0 Transform移除
+
+字节码基础
 
 
 
